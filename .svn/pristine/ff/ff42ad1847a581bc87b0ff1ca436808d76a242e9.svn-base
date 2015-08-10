@@ -1,0 +1,28 @@
+package org.web.aftertech.html5;
+
+
+/**
+ * 浏览器的实时通信 官方网址 http://tomcat.apache.org/tomcat-7.0-doc/web-socket-howto.html
+ * 
+ * @author Charsp
+ *
+ * @date 2014年12月15日
+ */
+public class WebSocket {
+
+	// private static final long serialVersionUID = -7178893327801338294L;
+	//
+	// @Override
+	// protected StreamInbound createWebSocketInbound(String arg0) {
+	// System.out.println("##########");
+	// return new MyMessageInbound();
+	// }
+	//
+	// @Override
+	// protected StreamInbound createWebSocketInbound(String arg0,
+	// HttpServletRequest arg1) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+
+}

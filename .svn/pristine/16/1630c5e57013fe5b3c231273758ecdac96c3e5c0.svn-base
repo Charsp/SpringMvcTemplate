@@ -1,0 +1,43 @@
+package com.swz.mysql.gps.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.swz.mysql.gps.model.Usermain;
+
+public interface UsermainRepository {
+	// 查询用户,应该返回用户id
+	public Usermain queryUsermain(String username, String password);
+
+	/**
+	 * 用户登录验证信息
+	 * 
+	 * @param username
+	 * @param password
+	 * @return 用户id编号
+	 */
+	public Integer queryUser(String username, String password);
+
+	/**
+	 * 查询用户车辆
+	 * 
+	 * @param userid
+	 * @return 所有车辆Id，方便查询位置，等状态信息
+	 */
+	public List<Map> queryVehicleList(int userid);
+
+	/**
+	 * 查询用户车辆
+	 * 
+	 * @param userid
+	 * @return 所有车辆Id对应的车牌号码
+	 */
+	public Map<String, Integer> queryVehicleMap(int userid);
+
+	/**
+	 * 查询用户分组情况
+	 * 
+	 * @return
+	 */
+	public List<Integer> queryVehicleGroup(int userid);
+}

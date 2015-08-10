@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Spring 环境配置 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+      http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+      http://www.springframework.org/schema/context  
+      http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+      http://www.springframework.org/schema/mvc  
+      http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-2.5.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
+	http://www.springframework.org/schema/data/mongo  http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd      ">
+
+	<!-- 标签是注解驱动的事务管理支持的核心 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- AOP 代理事务 监听 -->
+	<aop:aspectj-autoproxy />
+
+	<!-- 对包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 需要更改 -->
+	<context:component-scan base-package="com.swz">
+		<!-- <context:exclude-filter type="annotation" -->
+		<!-- expression="org.springframework.stereotype.Controller" /> -->
+	</context:component-scan>
+
+	<!-- 配置properties配置文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	<!-- mongoDB 第一种带_Class 的配置文档 -->
+	<mongo:mongo host="${mongo.host}" port="${mongo.port}">
+		<mongo:options connections-per-host="10"
+			threads-allowed-to-block-for-connection-multiplier="10"
+			connect-timeout="3000" max-wait-time="1500" auto-connect-retry="true"
+			socket-keep-alive="true" socket-timeout="1500" slave-ok="true"
+			write-number="1" write-timeout="0" write-fsync="true" />
+	</mongo:mongo>
+	<mongo:db-factory dbname="swz" mongo-ref="mongo" />
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+		<constructor-arg name="mongoConverter" ref="mappingMongoConverter" />
+	</bean>
+
+	<!-- mongoDB 第二种不带_Class 的配置文档 -->
+	<!-- <bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean"> -->
+	<!-- <property name="host" value="${mongo.url}" /> -->
+	<!-- <property name="port" value="${mongo.port}" /> -->
+	<!-- </bean> -->
+
+	<!-- 登录数据库的用户名和密码 -->
+	<!-- <bean id="mongoUserCredentials" class="org.springframework.data.authentication.UserCredentials"> -->
+	<!-- <constructor-arg name="username" value="root" /> -->
+	<!-- <constructor-arg name="password" value="123" /> -->
+	<!-- </bean> -->
+
+<!-- 	<bean id="mongoDbFactory" -->
+<!-- 		class="org.springframework.data.mongodb.core.SimpleMongoDbFactory"> -->
+<!-- 		<constructor-arg ref="mongo" /> -->
+<!-- 		<constructor-arg name="databaseName" value="swz" /> -->
+<!-- 	//	<constructor-arg name="credentials" ref="mongoUserCredentials" /> -->
+<!-- 	</bean> -->
+
+	<bean id="mappingContext"
+	class="org.springframework.data.mongodb.core.mapping.MongoMappingContext" />
+
+	<bean id="defaultMongoTypeMapper"
+		class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
+		<constructor-arg name="typeKey">
+			<null />
+		</constructor-arg>
+	</bean>
+
+	<bean id="mappingMongoConverter"
+		class="org.springframework.data.mongodb.core.convert.MappingMongoConverter">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+		<constructor-arg name="mappingContext" ref="mappingContext" />
+		<property name="typeMapper" ref="defaultMongoTypeMapper" />
+	</bean>
+
+<!-- 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate"> -->
+<!-- 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" /> -->
+<!-- 		<constructor-arg name="mongoConverter" ref="mappingMongoConverter" /> -->
+<!-- 	</bean> -->
+
+	<!-- 改为Annotation 注解形式 -->
+	<!-- <bean id="userRepositoryImpl" class="com.swz.mongo.dao.UserRepositoryImpl"> -->
+	<!-- <property name="mongoTemplate" ref="mongoTemplate" /> -->
+	<!-- </bean> -->
+
+	<!-- <bean id="vehicleRepositoryImpl" class="com.swz.mongo.dao.VehicleRepositoryImpl"> -->
+	<!-- <property name="mongoTemplate" ref="mongoTemplate" /> -->
+	<!-- </bean> -->
+
+	<!-- ++++++++++++++MYSQL 配置代码++++++++++++++ -->
+
+	<!-- 配置tomcat.jdbc数据源 Mysql.gps -->
+	<bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="maxActive" value="${jdbc.c3p0.maxPoolSize}" />
+		<property name="initialSize" value="${jdbc.c3p0.initialPoolSize}" />
+		<property name="maxIdle" value="${jdbc.c3p0.maxIdlePoolSize}" />
+		<property name="validationQuery" value="select 1" />
+		<property name="testOnBorrow" value="true" />
+		<property name="testOnReturn" value="true" />
+		<property name="testWhileIdle" value="true" />
+	</bean>
+
+	<!-- 配置sessionFactory -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 包扫描 @entity注释的类文件 -->
+		<property name="packagesToScan">
+			<list>
+				<value>com.swz.mysql.gps.model</value>
+			</list>
+		</property>
+		<!-- 配置hibernate的连接属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<!-- 提示sql代码程序日志 -->
+				<prop key="hibernate.show_sql">false</prop>
+				<!-- 提示sql代码程序日志 -->
+				<!-- <prop key="hiberante.format_sql">true</prop> -->
+				<prop key="current_session_context_class">thread</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 配置TransactionManager 事务管理 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<!-- 配置事务代理TransationProxy类 -->
+	<!-- 第一种 TransactionProxyFactoryBean 方式配置 -->
+	<!-- <bean id="transactionBese" -->
+	<!-- class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean" -->
+	<!-- lazy-init="true" abstract="true"> -->
+	<!-- <property name="transactionManager" ref="transactionManager"></property> -->
+	<!-- <property name="transactionAttributes"> -->
+	<!-- <props> -->
+	<!-- <prop key="add*">PROPAGATION_REQUIRED,-Exception</prop> -->
+	<!-- <prop key="update*">PROPAGATION_REQUIRED,-Exception</prop> -->
+	<!-- <prop key="insert*">PROPAGATION_REQUIRED,-Exception</prop> -->
+	<!-- <prop key="modify*">PROPAGATION_REQUIRED,-Exception</prop> -->
+	<!-- <prop key="delete*">PROPAGATION_REQUIRED,-Exception</prop> -->
+	<!-- <prop key="del*">PROPAGATION_REQUIRED,-Exception</prop> -->
+	<!-- <prop key="get*">PROPAGATION_NEVER</prop> -->
+	<!-- </props> -->
+	<!-- </property> -->
+	<!-- </bean> -->
+
+	<!-- 第二种 AOP切入配置 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 切片PointCuts插入事务管理 -->
+	<aop:config>
+		<aop:pointcut id="interceptorPointCuts"
+			expression="execution(* com.swz.service.web.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCuts" />
+	</aop:config>
+
+</beans>

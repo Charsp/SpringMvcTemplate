@@ -1,0 +1,229 @@
+package com.swz.mysql.gps.model;
+
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "usermain")
+public class Usermain {
+	@Id
+	private int UserID;
+	private int UserGroupID;
+	private String UserNum;
+	private String Password;
+	private String OwnerName;
+	private String UserName;
+	private String Tel;
+	private String Memo;
+	private Date timelimit;
+	private Date CreateTime;
+	private Date birthday;
+	private Integer SignLimit;
+	private byte DelPurview;
+	private Date UpdateTime;
+	private byte Admin;
+	private Integer DepartMentID;
+	private String UserType; 
+	private String FuncList; 
+	private String Vehicles; 
+	private String VehicleGroups; 
+	private String Locations;
+	private String Command; 
+	private String AlarmID;
+	private String AlarmType;
+
+	public void setUserID(int UserID) {
+		this.UserID = UserID;
+	}
+
+	public int getUserID() {
+		return UserID;
+	}
+
+	public void setUserGroupID(int UserGroupID) {
+		this.UserGroupID = UserGroupID;
+	}
+
+	public int getUserGroupID() {
+		return UserGroupID;
+	}
+
+	public void setUserNum(String UserNum) {
+		this.UserNum = UserNum;
+	}
+
+	public String getUserNum() {
+		return UserNum;
+	}
+
+	public void setPassword(String Password) {
+		this.Password = Password;
+	}
+
+	public String getPassword() {
+		return Password;
+	}
+
+	public void setOwnerName(String OwnerName) {
+		this.OwnerName = OwnerName;
+	}
+
+	public String getOwnerName() {
+		return OwnerName;
+	}
+
+	public void setUserName(String UserName) {
+		this.UserName = UserName;
+	}
+
+	public String getUserName() {
+		return UserName;
+	}
+
+	public void setTel(String Tel) {
+		this.Tel = Tel;
+	}
+
+	public String getTel() {
+		return Tel;
+	}
+
+	public void setMemo(String Memo) {
+		this.Memo = Memo;
+	}
+
+	public String getMemo() {
+		return Memo;
+	}
+
+	public void setTimelimit(Date timelimit) {
+		this.timelimit = timelimit;
+	}
+
+	public Date getTimelimit() {
+		return timelimit;
+	}
+
+	public void setCreateTime(Date CreateTime) {
+		this.CreateTime = CreateTime;
+	}
+
+	public Date getCreateTime() {
+		return CreateTime;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setSignLimit(Integer SignLimit) {
+		this.SignLimit = SignLimit;
+	}
+
+	public Integer getSignLimit() {
+		return SignLimit;
+	}
+
+	public void setDelPurview(byte DelPurview) {
+		this.DelPurview = DelPurview;
+	}
+
+	public byte getDelPurview() {
+		return DelPurview;
+	}
+
+	public void setUpdateTime(Date UpdateTime) {
+		this.UpdateTime = UpdateTime;
+	}
+
+	public Date getUpdateTime() {
+		return UpdateTime;
+	}
+
+	public void setAdmin(byte Admin) {
+		this.Admin = Admin;
+	}
+
+	public byte getAdmin() {
+		return Admin;
+	}
+
+	public void setDepartMentID(Integer DepartMentID) {
+		this.DepartMentID = DepartMentID;
+	}
+
+	public Integer getDepartMentID() {
+		return DepartMentID;
+	}
+
+	public void setUserType(String UserType) {
+		this.UserType = UserType;
+	}
+
+	public String getUserType() {
+		return UserType;
+	}
+
+	public void setFuncList(String FuncList) {
+		this.FuncList = FuncList;
+	}
+
+	public String getFuncList() {
+		return FuncList;
+	}
+
+	public void setVehicles(String Vehicles) {
+		this.Vehicles = Vehicles;
+	}
+
+	public String getVehicles() {
+		return Vehicles;
+	}
+
+	public void setVehicleGroups(String VehicleGroups) {
+		this.VehicleGroups = VehicleGroups;
+	}
+
+	public String getVehicleGroups() {
+		return VehicleGroups;
+	}
+
+	public void setLocations(String Locations) {
+		this.Locations = Locations;
+	}
+
+	public String getLocations() {
+		return Locations;
+	}
+
+	public void setCommand(String Command) {
+		this.Command = Command;
+	}
+
+	public String getCommand() {
+		return Command;
+	}
+
+	public void setAlarmID(String AlarmID) {
+		this.AlarmID = AlarmID;
+	}
+
+	public String getAlarmID() {
+		return AlarmID;
+	}
+
+	public void setAlarmType(String AlarmType) {
+		this.AlarmType = AlarmType;
+	}
+
+	public String getAlarmType() {
+		return AlarmType;
+	}
+}

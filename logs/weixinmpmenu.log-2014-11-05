@@ -1,0 +1,7 @@
+[DEBUG] 2014-11-05 09:20:16,715    org.swz.mongo.controller.LoginTest     - 开始
+[DEBUG] 2014-11-05 09:20:16,717    org.swz.mongo.controller.LoginTest     - 结束
+[INFO ] 2014-11-05 09:20:43,516    org.swz.mongo.controller.LoginTest     - 开始
+[DEBUG] 2014-11-05 09:20:43,518    org.swz.mongo.controller.LoginTest     - 结束
+[INFO ] 2014-11-05 09:21:04,676    org.swz.mongo.controller.LoginTest     - 开始
+[ERROR] 2014-11-05 09:21:04,678    org.swz.mongo.controller.LoginTest     - 开始
+[DEBUG] 2014-11-05 09:21:04,678    org.swz.mongo.controller.LoginTest     - 结束

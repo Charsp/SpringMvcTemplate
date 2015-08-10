@@ -1,0 +1,192 @@
+package com.swz.service.web;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.swz.mongo.model.Gps_data;
+import com.swz.mysql.gps.dao.impl.Log4jRepositoryImpl;
+import com.swz.mysql.gps.dao.impl.UsermainRepositoryImpl;
+import com.swz.mysql.gps.dao.impl.VehcleRepositoryImpl;
+import com.swz.mysql.gps.dao.impl.VehiclegroupRepositoryImpl;
+import com.swz.mysql.gps.model.Log4j;
+import com.swz.mysql.gps.model.Usermain;
+import com.swz.mysql.gps.model.Vehicle;
+import com.swz.vo.model.UserInfo;
+
+/**
+ * 日志管理服务
+ * 
+ * @author Charsp
+ *
+ * @date 2014年10月29日
+ */
+
+@Service
+public class LoggerServer {
+	// 日志文档记录
+	private Logger logger = LoggerFactory.getLogger(LoggerServer.class);
+	private Log4jRepositoryImpl log4jRepositoryImpl;
+	private UsermainRepositoryImpl usermainRepositoryImpl;
+	private VehcleRepositoryImpl vehcleRepositoryImpl;
+	private VehiclegroupRepositoryImpl vehiclegroupRepositoryImpl;
+
+	public VehiclegroupRepositoryImpl getVehiclegroupRepositoryImpl() {
+		return vehiclegroupRepositoryImpl;
+	}
+
+	@Resource
+	public void setVehiclegroupRepositoryImpl(
+			VehiclegroupRepositoryImpl vehiclegroupRepositoryImpl) {
+		this.vehiclegroupRepositoryImpl = vehiclegroupRepositoryImpl;
+	}
+
+	public VehcleRepositoryImpl getVehcleRepositoryImpl() {
+		return vehcleRepositoryImpl;
+	}
+
+	@Resource
+	public void setVehcleRepositoryImpl(
+			VehcleRepositoryImpl vehcleRepositoryImpl) {
+		this.vehcleRepositoryImpl = vehcleRepositoryImpl;
+	}
+
+	private FindVehicleLocation findVehicleLocation;
+
+	public FindVehicleLocation getFindVehicleLocation() {
+		return findVehicleLocation;
+	}
+
+	@Resource
+	public void setFindVehicleLocation(FindVehicleLocation findVehicleLocation) {
+		this.findVehicleLocation = findVehicleLocation;
+	}
+
+	public UsermainRepositoryImpl getUsermainRepositoryImpl() {
+		return usermainRepositoryImpl;
+	}
+
+	@Resource
+	public void setUsermainRepositoryImpl(
+			UsermainRepositoryImpl usermainRepositoryImpl) {
+		this.usermainRepositoryImpl = usermainRepositoryImpl;
+	}
+
+	public UserInfo resetUserInfo(UserInfo userInfo) {
+
+		return userInfo;
+	}
+
+	public Gps_data getCarLocation(Integer vehideid) {
+
+		return findVehicleLocation.findLocation(vehideid);
+	}
+
+	public String findVehcleName(int vehicleid) {
+		String carNameString = vehcleRepositoryImpl.findVehcleName(vehicleid);
+		return carNameString;
+	}
+
+	public List<Vehicle> findVehcles(List<Integer> vehicleids) {
+
+		return vehcleRepositoryImpl.findVehcles(vehicleids);
+	}
+
+	public List<Gps_data> findGpsDatas(List<Integer> vehicleids) {
+		List<Gps_data> gps_data = null;
+		if (vehicleids.size() > 0)
+			gps_data = new ArrayList<Gps_data>();
+		// 组用户
+		for (int i = 0; i < vehicleids.size(); i++) {
+			gps_data.add(findVehicleLocation.findLocation(vehicleids.get(i)));
+			logger.info(vehicleids.get(i) + "共拥有"
+					+ findVehicleLocation.findSum(vehicleids.get(i)) + "信息记录！");
+		}
+		return gps_data;
+	}
+
+	public List<Map> getNogroupVehicles(UserInfo userInfo) {
+		List<Map> vehiclelist = usermainRepositoryImpl
+				.queryVehicleList(userInfo.getId());
+		return vehiclelist;
+	}
+
+	public Map<String, List<Map>> getGroupVehicles(UserInfo userInfo) {
+		// 获得分组名称list表
+		return usermainRepositoryImpl.queryGroupVehicleList(userInfo.getId());
+	}
+
+	public boolean checkLogin(UserInfo userInfo) {
+		Usermain usermain = usermainRepositoryImpl.queryUsermain(
+				userInfo.getUsername(), userInfo.getPassword());
+		if (usermain != null) {
+			userInfo.setId(usermain.getUserID());
+			return true;
+		}
+		return false;
+	}
+
+	public List<Gps_data> weixinLogin(HttpServletRequest request,
+			UserInfo userInfo) {
+		List<Gps_data> gps_data = null;
+		// 成功将用户信息放进session中，负责返回空
+		Usermain usermain = usermainRepositoryImpl.queryUsermain(
+				userInfo.getUsername(), userInfo.getPassword());
+		// 登录成功，获取车辆id号码
+		if (usermain != null) {
+			logger.info("用户登录成功！");
+
+			// ///////////////// 获得车辆id列表///////////////////
+			List<Map> vehiclelist = usermainRepositoryImpl
+					.queryVehicleList(usermain.getUserID());
+
+			// ///////////////// 获得车组id列表///////////////////
+			List<Integer> groupList = usermainRepositoryImpl
+					.queryVehicleGroup(usermain.getUserID());
+			// //保存用户信息
+			// userInfo.setCar_object_id(vehiclelist);
+			// userInfo.setGroupid(groupList);
+			// // 获得车牌号码列表
+			// userInfo.setCar_no(vehcleRepositoryImpl
+			// .findVehclesName(vehiclelist));
+
+			HttpSession session = request.getSession(false);
+			// 创建用户信息
+			session.setAttribute("user", userInfo);
+			logger.info("用户拥有" + vehiclelist.size() + "台车辆");
+			if (vehiclelist.size() > 0)
+				gps_data = new ArrayList<Gps_data>();
+			// 组用户
+			for (int i = 0; i < vehiclelist.size(); i++) {
+				// int vehideid = vehiclelist.get(i);
+				// gps_data.add(findVehicleLocation.findLocation(vehideid));
+				// logger.info(vehideid + "共拥有"
+				// + findVehicleLocation.findSum(vehideid) + "位置信息记录！");
+			}
+		} else {
+			logger.info("非法用户登录!" + userInfo.getUsername());
+		}
+		return gps_data;
+	}
+
+	public List<Log4j> getLog4j() {
+		return log4jRepositoryImpl.queryLog();
+	}
+
+	public Log4jRepositoryImpl getLog4jRepositoryImpl() {
+		return log4jRepositoryImpl;
+	}
+
+	@Resource
+	public void setLog4jRepositoryImpl(Log4jRepositoryImpl log4jRepositoryImpl) {
+		this.log4jRepositoryImpl = log4jRepositoryImpl;
+	}
+}

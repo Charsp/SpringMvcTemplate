@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/2002/xmlspec/dtd/2.10/xmlspec.dtd">
+<!-- 定义一个工程，默认任务为warFile。 -->
+<project name="Visit" default="warFile" basedir=".">
+
+	<!-- 定义属性，Maven修正路径值。 -->
+	<property name="mavenPath"
+		value="../.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/SpringMvcTemplate"></property>
+
+	<!-- 定义属性，打成war包的名称。 -->
+	<property name="warFileName" value="weixin.war"></property>
+
+	<!-- 定义路径，编译java文件时用到的jar包。 -->
+	<path id="project.lib">
+		<fileset dir="${basedir}/${mavenPath}/WEB-INF/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- 定义Tomcat Lib路径，编译java文件时用到的jar包。 -->
+	<path id="tomcat.lib">
+		<fileset dir="D:/Tomcat/apache-tomcat-7.0.53/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- 定义任务，清空任务：清空原有的class文件，创建新的build路径。 -->
+	<target name="clean">
+		<delete dir="${basedir}/build" />
+		<mkdir dir="${basedir}/build" />
+	</target>
+
+	<!-- 定义任务，编译src文件夹中的java文件，编译后的class文件放到创建的文件夹下。 -->
+	<target name="compile" depends="clean">
+		<javac srcdir="${basedir}/src/main/java" destdir="${basedir}/build"
+			includeantruntime="false">
+			<classpath refid="project.lib" />
+			<classpath refid="tomcat.lib">
+			</classpath>
+		</javac>
+	</target>
+
+	<!-- 定义默认任务，将class文件集合成jar包。 -->
+	<target name="warFile" depends="compile">
+		<!-- 删除原有war包。 -->
+		<delete dir="${basedir}/${warFileName}" />
+		<!-- 建立新war包。 -->
+		<war destfile="${basedir}/build/${warFileName}" webxml="${basedir}/${mavenPath}/WEB-INF/web.xml">
+			<!-- 将非jar和非class文件拷贝到war包的对应路径下。 -->
+			<fileset dir="${basedir}/${mavenPath}">
+				<include name="**/**.*" />
+				<exclude name="**/*.jar" />
+				<exclude name="**/*.class" />
+			</fileset>
+			<!-- 将jar和class文件拷贝到war包的对应路径下。 -->
+			<lib dir="${basedir}/${mavenPath}/WEB-INF/lib" />
+			<classes dir="${basedir}/build" />
+		</war>
+	</target>
+
+</project>
